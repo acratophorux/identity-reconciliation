@@ -67,14 +67,32 @@ export const identifyContact = async ({email, phoneNumber}: IdentifyRequest) =>{
         contact.linkedContact = primary;
         await contactRepo.save(contact);
     }
-    //create new secondary when needed
+    //check whether the user already exists
     const exists = contactsArray.some(c=> {
         return (email && c.email === email )||(phoneNumber && c.phoneNumber === phoneNumber)
-            
+        
     });
-
-
-
+    
+    //update missing values of the user already exists and has empty fields
+    if (exists) {
+        for (const contact of contactsArray) {
+            if (contact.id === primary.id) {
+                let updated = false;
+                if (!contact.email && email) {
+                    contact.email = email;
+                    updated = true;
+                }
+                if (!contact.phoneNumber && phoneNumber) {
+                    contact.phoneNumber = phoneNumber;
+                    updated = true;
+                }
+                if (updated) await contactRepo.save(contact);
+            }
+        }
+    }
+    
+    
+    //create new secondary when needed
     let newSecondary: Contact | undefined = undefined;
     if (!exists) {
         newSecondary = contactRepo.create({
@@ -82,6 +100,7 @@ export const identifyContact = async ({email, phoneNumber}: IdentifyRequest) =>{
         });
         await contactRepo.save(newSecondary);
     }
+
 
     const allLinkedContacts = await contactRepo.find({
         where: [{id:primary.id}, {linkedContact: {id: primary.id}}],
