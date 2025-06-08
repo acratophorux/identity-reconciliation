@@ -4,23 +4,13 @@ A service to resolve user identities across multiple contact points (email, phon
 
 Live API: [https://identity-reconciliation-5juo.onrender.com/identify](https://identity-reconciliation-5juo.onrender.com/identify)  
 
-<!-- ---
-
-## Features
-
-- Accepts email and/or phone number
-- Resolves and merges contacts based on linkage rules
-- Maintains primary-secondary relationships
-- Prevents duplicate entries
-- Follows consistent precedence logic -->
-
 ---
 
 ## Usage
 
 ### Endpoint
 
-POST /identify
+POST https://identity-reconciliation-5juo.onrender.com/identify
 
 #### Request Body (any combination of the fields):
 ```json
