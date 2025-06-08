@@ -1,15 +1,14 @@
 import { AppDataSource } from "../data-source";
 import { Contact } from "../entities/contact.entity";
-import { In } from "typeorm";
+import { In, Repository } from "typeorm";
 
 interface IdentifyRequest {
     email?: string;
     phoneNumber?: string;
 }
 
-export const identifyContact = async ({email, phoneNumber}: IdentifyRequest) =>{
-    const contactRepo = AppDataSource.getRepository(Contact);
-
+export const identifyContact = async (repo: Repository<Contact>, {email, phoneNumber}: IdentifyRequest) =>{
+    const contactRepo = repo;
     // clean up email and phone
     email = email?.trim() || undefined;
     phoneNumber = phoneNumber?.trim() || undefined;
@@ -68,9 +67,12 @@ export const identifyContact = async ({email, phoneNumber}: IdentifyRequest) =>{
         await contactRepo.save(contact);
     }
     //check whether the user already exists
-    const exists = contactsArray.some(c=> {
-        return (email && c.email === email )||(phoneNumber && c.phoneNumber === phoneNumber)
-        
+    const exists = contactsArray.some(c => {
+    return (
+        (email && phoneNumber && c.email === email && c.phoneNumber === phoneNumber) ||
+        (!email && phoneNumber && c.phoneNumber === phoneNumber) ||
+        (!phoneNumber && email && c.email === email)
+    );
     });
     
     //update missing values of the user already exists and has empty fields
