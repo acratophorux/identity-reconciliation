@@ -4,6 +4,8 @@
   "description": "A service to reconcile user identity based on shared emails or phone numbers across multiple purchases, ensuring consistent customer profiles or personalization",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
     "test": "jest"
   },
   "keywords": [],
