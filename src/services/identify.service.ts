@@ -46,8 +46,20 @@ export const identifyContact = async ({email, phoneNumber}: IdentifyRequest) =>{
     }
     //find the oldest primary contacct
     const contactsArray = Array.from(allContacts.values());
-    const primary = contactsArray.filter( c => c.linkPrecedence === 'primary').sort((a, b)=> a.createdAt.getTime() - b.createdAt.getTime())[0];
+    const primaries = contactsArray.filter(c => c.linkPrecedence === 'primary');
 
+    const primary = primaries.sort(
+        (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+    )[0];
+
+    // demote all newer primaries, if any
+    const toDemote = primaries.filter(p => p.id !== primary.id);
+
+    for (const contact of toDemote) {
+        contact.linkPrecedence = 'secondary';
+        contact.linkedContact = primary;
+        await contactRepo.save(contact);
+    }
     //create new secondary when needed
     const exists = contactsArray.some(c=> c.email === email && c.phoneNumber === phoneNumber);
 
