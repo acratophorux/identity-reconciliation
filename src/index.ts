@@ -6,11 +6,12 @@ const app = express();
 app.use(express.json());
 app.use('/identify', identifyRouter);
 
+const port = process.env.PORT || 3000 
 AppDataSource.initialize().then(
     ()=>{
         console.log('Data source initialized');
-        app.listen(3000, ()=>{
-            console.log('Server is running on port 3000');
+        app.listen(port, ()=>{
+            console.log(`App listening on port ${port}`);
         })
     }
 ).catch((err) => {
