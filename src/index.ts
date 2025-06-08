@@ -4,7 +4,7 @@ import identifyRouter from './routes/identify.route';
 
 const app = express();
 app.use(express.json());
-app.use('/identify', indentifyRouter);
+app.use('/identify', identifyRouter);
 
 AppDataSource.initialize().then(
     ()=>{
