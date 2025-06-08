@@ -10,6 +10,13 @@ interface IdentifyRequest {
 export const identifyContact = async ({email, phoneNumber}: IdentifyRequest) =>{
     const contactRepo = AppDataSource.getRepository(Contact);
 
+    // clean up email and phone
+    email = email?.trim() || undefined;
+    phoneNumber = phoneNumber?.trim() || undefined;
+
+    if(!email && !phoneNumber) throw new Error("At least one of email or phoneNumber must be provided.");
+
+
     // find all matching contacts
     const existingContacts = await contactRepo.find({
         where:[
@@ -61,7 +68,10 @@ export const identifyContact = async ({email, phoneNumber}: IdentifyRequest) =>{
         await contactRepo.save(contact);
     }
     //create new secondary when needed
-    const exists = contactsArray.some(c=> c.email === email && c.phoneNumber === phoneNumber);
+    const exists = contactsArray.some(c=> {
+        return (email && c.email === email )||(phoneNumber && c.phoneNumber === phoneNumber)
+            
+    });
 
 
 
